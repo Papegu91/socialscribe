@@ -1,20 +1,18 @@
+// frontend/src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Feed from './components/Feed';
-import Footer from './components/Footer';
+import Register from './components/Register';
 import Login from './components/Login';
+import './styles.css'; // Import the CSS file
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Feed />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-      <Footer />
-    </Router>
+    <div className="form-container">
+      <h1>Welcome to SocialScribe</h1>
+      <h2>Register</h2>
+      <Register />
+      <h2>Login</h2>
+      <Login />
+    </div>
   );
 }
 
