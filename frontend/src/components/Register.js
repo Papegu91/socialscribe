@@ -1,39 +1,56 @@
-// frontend/src/components/Register.js
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const register = async (e) => {
+  
+  const handleRegister = async (e) => {
     e.preventDefault();
+
+    
+    const apiUrl = 'http://localhost:5000/api/auth/register';  
+
     try {
-      await axios.post('https://socialscribe-zcr5.onrender.com/signup', { email, password });
-      alert('User created. You can now log in.');
-    } catch (error) {
-      alert('Error creating account');
+      
+      const res = await axios.post(apiUrl, {
+        email,
+        password,
+      });
+
+      
+      alert('User created successfully. Please log in.');
+      navigate('/login');  
+
+    } catch (err) {
+      
+      alert(err.response?.data?.message || 'Registration failed');
     }
   };
 
   return (
-    <form onSubmit={register}>
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button type="submit">Register</button>
-      <p>Already have an account? <a href="/login">Login here</a></p>
-    </form>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>Register</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+    </div>
   );
 }

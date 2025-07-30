@@ -1,12 +1,10 @@
 import React from 'react';
 
-function Feed() {
+export default function Feed() {
   return (
-    <div className="p-6 text-center">
-      <h1 className="text-3xl font-bold">Welcome to the Feed!</h1>
-      <p className="text-gray-600 mt-4">More features coming soon...</p>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h1>Welcome to the Feed!</h1>
+      <p>You are now logged in.</p>
     </div>
   );
 }
-
-export default Feed;
