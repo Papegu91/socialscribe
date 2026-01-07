@@ -20,7 +20,7 @@ const NewsletterForm = ({ onCreated }) => {
       setSubject('');
       setBody('');
       setTags('');
-      onCreated(); // refresh list
+      onCreated(); 
     } catch (err) {
       console.error('Failed to create newsletter:', err);
     }

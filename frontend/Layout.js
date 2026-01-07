@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
-import './Layout.css'; // make sure this file exists too
+import './Layout.css'; 
 
 function Layout() {
   return (

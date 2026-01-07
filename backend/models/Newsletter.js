@@ -1,19 +1,17 @@
-// models/Newsletter.js
 const mongoose = require('mongoose');
 
-const NewsletterSchema = new mongoose.Schema({
+const newsletterSchema = new mongoose.Schema({
   subject: { type: String, required: true },
   body: { type: String, required: true },
-  tags: [{ type: String }],
-  status: { 
-    type: String, 
-    enum: ['draft', 'scheduled', 'sent'], 
-    default: 'draft' 
-  },
-  createdAt: { type: Date, default: Date.now },
-  scheduledAt: Date,
-  sentAt: Date,
-  sentCount: { type: Number, default: 0 }
-});
+  tags: { type: [String], default: [] },
+  status: { type: String, default: 'draft' },
+  likes: { type: Number, default: 0 },   // 👍 Likes
+  comments: [                            // 💬 Comments
+    {
+      text: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ]
+}, { timestamps: true });
 
-module.exports = mongoose.model('Newsletter', NewsletterSchema);
+module.exports = mongoose.model('Newsletter', newsletterSchema);

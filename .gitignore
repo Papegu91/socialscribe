@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Optional: ignore your project structure file
+frontend/project-structure.txt

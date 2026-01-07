@@ -30,8 +30,8 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/socialscrib
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('✅ MongoDB connected'))
-.catch((err) => console.error('❌ MongoDB error:', err));
+.then(() => console.log(' MongoDB connected'))
+.catch((err) => console.error(' MongoDB error:', err));
 
 // === Auth routes ===
 
@@ -75,7 +75,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// ✅ Newsletter routes
+//  Newsletter routes
 app.use('/api/newsletters', require('./routes/newsletters'));
 
 // === WebSocket connection ===
@@ -84,17 +84,17 @@ wss.on('connection', (ws) => {
   ws.send('Welcome to WebSocket');
 
   ws.on('message', (msg) => {
-    console.log('📨 Message:', msg);
+    console.log(' Message:', msg);
     ws.send(`Echo: ${msg}`);
   });
 
   ws.on('close', () => {
-    console.log('❌ WebSocket disconnected');
+    console.log(' WebSocket disconnected');
   });
 });
 
 // === Start server ===
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(` Server running on port ${PORT}`);
 });
