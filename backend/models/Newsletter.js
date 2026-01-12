@@ -4,11 +4,16 @@ const newsletterSchema = new mongoose.Schema({
   subject: { type: String, required: true },
   body: { type: String, required: true },
   tags: { type: [String], default: [] },
-  status: { type: String, default: 'draft' },
-  likes: { type: Number, default: 0 },   // 👍 Likes
-  comments: [                            // 💬 Comments
+  status: { type: String, enum: ['draft', 'published'], default: 'draft' },
+
+  // 👍 Likes: store user IDs to prevent duplicate likes
+  likes: [{ type: String }],
+
+  // 💬 Comments
+  comments: [
     {
-      text: { type: String, required: true },
+      user: { type: String, required: true },   // who made the comment
+      text: { type: String, required: true },   // comment content
       createdAt: { type: Date, default: Date.now }
     }
   ]

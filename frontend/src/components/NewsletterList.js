@@ -5,14 +5,14 @@ const NewsletterList = ({ refreshTrigger }) => {
   const [newsletters, setNewsletters] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/newsletters')
+    axios.get('http://localhost:5000/api/newsletters')
       .then(res => setNewsletters(res.data))
       .catch(err => console.error('Failed to fetch newsletters:', err));
   }, [refreshTrigger]);
 
   const handleLike = async (id) => {
     try {
-      const res = await axios.post(`/api/newsletters/${id}/like`);
+      const res = await axios.post(`http://localhost:5000/api/newsletters/${id}/like`);
       setNewsletters(prev =>
         prev.map(item =>
           item._id === id ? { ...item, likes: res.data.likes } : item
@@ -25,7 +25,7 @@ const NewsletterList = ({ refreshTrigger }) => {
 
   const handleComment = async (id, text) => {
     try {
-      const res = await axios.post(`/api/newsletters/${id}/comment`, { text });
+      const res = await axios.post(`http://localhost:5000/api/newsletters/${id}/comment`, { text });
       setNewsletters(prev =>
         prev.map(item =>
           item._id === id ? { ...item, comments: res.data } : item
@@ -33,6 +33,24 @@ const NewsletterList = ({ refreshTrigger }) => {
       );
     } catch (err) {
       console.error('Failed to comment:', err);
+    }
+  };
+
+  const handleDeleteComment = async (newsletterId, commentId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this comment?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`http://localhost:5000/api/newsletters/${newsletterId}/comments/${commentId}`);
+      setNewsletters(prev =>
+        prev.map(item =>
+          item._id === newsletterId
+            ? { ...item, comments: item.comments.filter(c => c._id !== commentId) }
+            : item
+        )
+      );
+    } catch (err) {
+      console.error('Failed to delete comment:', err);
     }
   };
 
@@ -66,8 +84,16 @@ const NewsletterList = ({ refreshTrigger }) => {
               <div className="mt-3">
                 <h4 className="text-sm font-semibold">Comments</h4>
                 <ul className="text-sm text-gray-700">
-                  {n.comments?.map((c, i) => (
-                    <li key={i}>{c.text}</li>
+                  {n.comments?.map((c) => (
+                    <li key={c._id} className="flex justify-between items-center">
+                      <span>{c.text}</span>
+                      <button
+                        onClick={() => handleDeleteComment(n._id, c._id)}
+                        className="text-red-500 ml-2"
+                      >
+                        Delete
+                      </button>
+                    </li>
                   ))}
                 </ul>
                 <form
