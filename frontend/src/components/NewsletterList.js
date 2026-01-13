@@ -1,127 +1,129 @@
-import { useEffect, useState } from 'react';
+// src/components/NewsletterList.js
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { ThemeContext } from '../context/ThemeContext'; 
+import './NewsletterList.css';
 
-const NewsletterList = ({ refreshTrigger }) => {
+const NewsletterList = () => {
   const [newsletters, setNewsletters] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/newsletters')
-      .then(res => setNewsletters(res.data))
-      .catch(err => console.error('Failed to fetch newsletters:', err));
-  }, [refreshTrigger]);
+    const fetchNewsletters = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get("http://localhost:5000/api/newsletters");
+        setNewsletters(res.data);
+      } catch {
+        setError("Could not load newsletters. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNewsletters();
+  }, []);
 
   const handleLike = async (id) => {
     try {
-      const res = await axios.post(`http://localhost:5000/api/newsletters/${id}/like`);
-      setNewsletters(prev =>
-        prev.map(item =>
-          item._id === id ? { ...item, likes: res.data.likes } : item
+      await axios.post(`http://localhost:5000/api/newsletters/${id}/like`, {
+        user: "AnonymousUser"
+      });
+      setNewsletters((prev) =>
+        prev.map((n) =>
+          n._id === id ? { ...n, likes: [...n.likes, "AnonymousUser"] } : n
         )
       );
-    } catch (err) {
-      console.error('Failed to like:', err);
+    } catch {
+      alert("Could not like this newsletter. Try again later.");
     }
   };
 
-  const handleComment = async (id, text) => {
+  const handleComment = async (id, text, inputRef) => {
+    if (!text.trim()) {
+      alert("Comment cannot be empty!");
+      return;
+    }
     try {
-      const res = await axios.post(`http://localhost:5000/api/newsletters/${id}/comment`, { text });
-      setNewsletters(prev =>
-        prev.map(item =>
-          item._id === id ? { ...item, comments: res.data } : item
+      const res = await axios.post(
+        `http://localhost:5000/api/newsletters/${id}/comment`,
+        { text, user: "Anonymous" }
+      );
+      setNewsletters((prev) =>
+        prev.map((n) =>
+          n._id === id ? { ...n, comments: res.data } : n
         )
       );
-    } catch (err) {
-      console.error('Failed to comment:', err);
+      if (inputRef) inputRef.value = "";
+    } catch {
+      alert("Could not post your comment. Please try again later.");
     }
   };
 
   const handleDeleteComment = async (newsletterId, commentId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this comment?");
-    if (!confirmDelete) return;
-
     try {
-      await axios.delete(`http://localhost:5000/api/newsletters/${newsletterId}/comments/${commentId}`);
-      setNewsletters(prev =>
-        prev.map(item =>
-          item._id === newsletterId
-            ? { ...item, comments: item.comments.filter(c => c._id !== commentId) }
-            : item
+      await axios.delete(
+        `http://localhost:5000/api/newsletters/${newsletterId}/comments/${commentId}`
+      );
+      setNewsletters((prev) =>
+        prev.map((n) =>
+          n._id === newsletterId
+            ? { ...n, comments: n.comments.filter((c) => c._id !== commentId) }
+            : n
         )
       );
-    } catch (err) {
-      console.error('Failed to delete comment:', err);
+    } catch {
+      alert("Could not delete comment. Please try again later.");
     }
   };
 
+  if (loading) return <p>Loading newsletters...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+
   return (
-    <div className="mt-6">
-      <h2 className="text-xl font-semibold mb-2">Your Newsletters</h2>
-      {newsletters.length === 0 ? (
-        <p>No newsletters yet.</p>
-      ) : (
-        <ul className="space-y-3">
-          {newsletters.map((n) => (
-            <li key={n._id} className="border p-3 rounded bg-gray-50">
-              <div className="font-bold">{n.subject}</div>
-              <div className="text-sm text-gray-600">
-                {n.status} | {new Date(n.createdAt).toLocaleString()}
-              </div>
-              <p className="mt-1">{n.body.slice(0, 100)}...</p>
-              <div className="text-xs text-blue-500 mt-1">
-                Tags: {n.tags.join(', ')}
-              </div>
+    <div className={darkMode ? "dark-mode" : "light-mode"}>
+      <button onClick={toggleTheme} className="theme-toggle">
+        {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
+      </button>
 
-              {/* 👍 Like button */}
-              <button
-                onClick={() => handleLike(n._id)}
-                className="bg-green-500 text-white px-3 py-1 rounded mt-2"
-              >
-                👍 Like ({n.likes || 0})
-              </button>
+      <h2>Newsletters</h2>
+      {newsletters.map((n) => (
+        <div className="newsletter-card" key={n._id}>
+          <h3>{n.subject}</h3>
+          <p>{n.body}</p>
+          <p><strong>Likes:</strong> {n.likes.length}</p>
 
-              {/* 💬 Comments */}
-              <div className="mt-3">
-                <h4 className="text-sm font-semibold">Comments</h4>
-                <ul className="text-sm text-gray-700">
-                  {n.comments?.map((c) => (
-                    <li key={c._id} className="flex justify-between items-center">
-                      <span>{c.text}</span>
-                      <button
-                        onClick={() => handleDeleteComment(n._id, c._id)}
-                        className="text-red-500 ml-2"
-                      >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const text = e.target.comment.value;
-                    handleComment(n._id, text);
-                    e.target.reset();
-                  }}
-                  className="mt-2"
+          <div className="newsletter-actions">
+            <button onClick={() => handleLike(n._id)}>👍 Like</button>
+          </div>
+
+          <h4>Comments</h4>
+          <ul className="comment-list">
+            {n.comments.map((c) => (
+              <li key={c._id}>
+                <strong>{c.user}:</strong> {c.text}{" "}
+                <em>({new Date(c.createdAt).toLocaleString()})</em>
+                <button
+                  className="delete-btn"
+                  onClick={() => handleDeleteComment(n._id, c._id)}
                 >
-                  <input
-                    name="comment"
-                    placeholder="Write a comment..."
-                    className="border p-1 rounded w-full"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white px-2 py-1 rounded mt-1"
-                  >
-                    Add Comment
-                  </button>
-                </form>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                  🗑️ Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          <input
+            type="text"
+            className="comment-input"
+            placeholder="Add a comment..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleComment(n._id, e.target.value, e.target);
+            }}
+          />
+        </div>
+      ))}
     </div>
   );
 };
