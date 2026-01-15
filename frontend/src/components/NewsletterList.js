@@ -1,7 +1,7 @@
-// src/components/NewsletterList.js
+// src/components/NewsletterList.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { ThemeContext } from '../context/ThemeContext'; 
+import { ThemeContext } from '../context/ThemeContext';
 import './NewsletterList.css';
 
 const NewsletterList = () => {
@@ -14,7 +14,7 @@ const NewsletterList = () => {
     const fetchNewsletters = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:5000/api/newsletters");
+        const res = await axios.get("/api/newsletters"); // ✅ proxy handles localhost:5000
         setNewsletters(res.data);
       } catch {
         setError("Could not load newsletters. Please try again later.");
@@ -27,7 +27,7 @@ const NewsletterList = () => {
 
   const handleLike = async (id) => {
     try {
-      await axios.post(`http://localhost:5000/api/newsletters/${id}/like`, {
+      await axios.post(`/api/newsletters/${id}/like`, {
         user: "AnonymousUser"
       });
       setNewsletters((prev) =>
@@ -46,10 +46,10 @@ const NewsletterList = () => {
       return;
     }
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/newsletters/${id}/comment`,
-        { text, user: "Anonymous" }
-      );
+      const res = await axios.post(`/api/newsletters/${id}/comment`, {
+        text,
+        user: "Anonymous"
+      });
       setNewsletters((prev) =>
         prev.map((n) =>
           n._id === id ? { ...n, comments: res.data } : n
@@ -63,9 +63,7 @@ const NewsletterList = () => {
 
   const handleDeleteComment = async (newsletterId, commentId) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/newsletters/${newsletterId}/comments/${commentId}`
-      );
+      await axios.delete(`/api/newsletters/${newsletterId}/comments/${commentId}`);
       setNewsletters((prev) =>
         prev.map((n) =>
           n._id === newsletterId
@@ -88,6 +86,7 @@ const NewsletterList = () => {
       </button>
 
       <h2>Newsletters</h2>
+      {newsletters.length === 0 && <p>No newsletters yet. Create one above!</p>}
       {newsletters.map((n) => (
         <div className="newsletter-card" key={n._id}>
           <h3>{n.subject}</h3>
@@ -95,7 +94,7 @@ const NewsletterList = () => {
           <p><strong>Likes:</strong> {n.likes.length}</p>
 
           <div className="newsletter-actions">
-            <button onClick={() => handleLike(n._id)}>👍 Like</button>
+            <button onClick={() => handleLike(n._id)}> Like</button>
           </div>
 
           <h4>Comments</h4>
@@ -108,7 +107,7 @@ const NewsletterList = () => {
                   className="delete-btn"
                   onClick={() => handleDeleteComment(n._id, c._id)}
                 >
-                  🗑️ Delete
+                   Delete
                 </button>
               </li>
             ))}
