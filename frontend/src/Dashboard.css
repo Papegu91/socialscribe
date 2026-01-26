@@ -1,29 +1,80 @@
+/* Dashboard.css */
 
-.dashboard {
-    background-color: #f4f7fc;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dashboard h1 {
-    color: #333;
-    font-size: 2em;
-  }
-  
-  .dashboard p {
-    color: #555;
-  }
-  
-  .dashboard button {
-    padding: 10px 20px;
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .dashboard button:hover {
-    background-color: #45a049;
-  }
-  
+/* Layout */
+.dashboard-container {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.bg-dark {
+  background-color: #1f2937; /* gray-900 */
+  color: #e5e7eb;           /* gray-200 */
+}
+
+.bg-light {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #1f2937;           /* gray-800 */
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  cursor: pointer;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background: #dc2626; /* red-600 */
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Success message */
+.success-message {
+  margin: 16px 0;
+  padding: 10px;
+  background-color: #d1fae5; /* green-100 */
+  color: #065f46;           /* green-700 */
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+/* Newsletter form */
+.newsletter-form {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Newsletter list */
+.newsletter-list {
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}

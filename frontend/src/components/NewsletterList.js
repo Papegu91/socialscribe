@@ -14,7 +14,7 @@ const NewsletterList = () => {
     const fetchNewsletters = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("/api/newsletters"); // ✅ proxy handles localhost:5000
+        const res = await axios.get("/api/newsletters"); //  proxy handles localhost:5000
         setNewsletters(res.data);
       } catch {
         setError("Could not load newsletters. Please try again later.");

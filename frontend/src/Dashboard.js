@@ -4,19 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../context/ThemeProvider"; 
 import axios from "axios";
 import NewsletterCard from "../components/NewsletterCard";
+import NewsletterForm from "../components/NewsletterForm";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useContext(ThemeContext);
   const userEmail = localStorage.getItem("userEmail") || "User";
 
-  // State for newsletters and form inputs
+  // State
   const [newsletters, setNewsletters] = useState([]);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [tags, setTags] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // Fetch newsletters when component loads
+  // Fetch newsletters
   useEffect(() => {
     axios.get("/api/newsletters")
       .then(res => setNewsletters(res.data))
@@ -37,6 +39,10 @@ const Dashboard = () => {
       const res = await axios.post("/api/newsletters", newNewsletter);
       setNewsletters([res.data, ...newsletters]);
       setSubject(""); setBody(""); setTags("");
+
+      // Success message
+      setSuccessMessage("Newsletter saved successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
       console.error("Error creating newsletter:", err);
     }
@@ -68,20 +74,18 @@ const Dashboard = () => {
 
   return (
     <div className={`min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}`}>
-      {/* Header Bar */}
+      {/* Header */}
       <header className={`flex justify-between items-center shadow px-6 py-4 
         ${theme === "dark" ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"}`}>
         <h1 className="text-xl font-bold">📬 SocialScribe</h1>
         <div className="flex items-center gap-4">
           <span>{userEmail}</span>
-          {/* Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
             className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 hover:opacity-80 transition"
           >
             {theme === "dark" ? "☀️" : "🌙"}
           </button>
-          {/* Logout */}
           <button
             onClick={handleLogout}
             className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
@@ -91,40 +95,27 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main */}
       <main className="p-6">
         <h2 className="text-2xl font-bold mb-6">Welcome to your Dashboard</h2>
 
+        {/* Success message */}
+        {successMessage && (
+          <div className="mb-4 p-2 bg-green-100 text-green-700 rounded">
+            {successMessage}
+          </div>
+        )}
+
         {/* Newsletter Form */}
-        <div className={`shadow rounded p-4 mb-6 ${theme === "dark" ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"}`}>
-          <h3 className="text-lg font-semibold mb-2">Create Newsletter</h3>
-          <input 
-            type="text" 
-            value={subject}
-            onChange={e => setSubject(e.target.value)}
-            placeholder="Subject" 
-            className="w-full p-2 border rounded mb-2" 
-          />
-          <textarea 
-            value={body}
-            onChange={e => setBody(e.target.value)}
-            placeholder="Body" 
-            className="w-full p-2 border rounded mb-2" 
-          />
-          <input 
-            type="text" 
-            value={tags}
-            onChange={e => setTags(e.target.value)}
-            placeholder="Tags (comma-separated)" 
-            className="w-full p-2 border rounded mb-2" 
-          />
-          <button 
-            onClick={handleCreate}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Save Draft
-          </button>
-        </div>
+        <NewsletterForm 
+          subject={subject}
+          setSubject={setSubject}
+          body={body}
+          setBody={setBody}
+          tags={tags}
+          setTags={setTags}
+          onCreate={handleCreate}
+        />
 
         {/* Newsletter List */}
         <div className={`shadow rounded p-4 ${theme === "dark" ? "bg-gray-800 text-gray-200" : "bg-white text-gray-800"}`}>

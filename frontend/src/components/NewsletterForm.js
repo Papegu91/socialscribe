@@ -6,7 +6,7 @@ const NewsletterForm = ({ onCreated }) => {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [tags, setTags] = useState('');
-  const [status, setStatus] = useState(null); // ✅ success/error feedback
+  const [status, setStatus] = useState(null); // success/error feedback
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {

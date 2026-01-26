@@ -1,47 +1,57 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './Register.css'; // This connects to your styling file
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Register = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
-    const apiUrl = 'http://localhost:5000/api/auth/register';
-
     try {
-      const res = await axios.post(apiUrl, { email, password });
-      alert('User created successfully. Please log in.');
-      navigate('/login');
+      await axios.post("http://localhost:5000/api/register", {
+        email,
+        password
+      });
+      alert("Registered successfully!");
+      navigate("/");
     } catch (err) {
-      alert(err.response?.data?.message || 'Registration failed');
+      alert(err.response?.data?.message || "Error registering");
     }
   };
 
   return (
-    <div className="register-page">
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Register</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-xl rounded-lg p-8 w-96">
+        <h2 className="text-xl font-semibold mb-4 text-center">Register</h2>
+        <form onSubmit={handleRegister}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-2 border rounded mb-4"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 border rounded mb-4"
+            required
+          />
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          >
+            Register
+          </button>
+        </form>
+      </div>
     </div>
   );
-}
+};
+
+export default Register;

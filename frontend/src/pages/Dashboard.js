@@ -1,16 +1,47 @@
-// src/pages/Dashboard.jsx
-import { useState } from 'react';
-import NewsletterForm from '../components/NewsletterForm';
-import NewsletterList from '../components/NewsletterList';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const [refresh, setRefresh] = useState(0);
+  const userEmail = localStorage.getItem("userEmail");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Clear all auth data
+    localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
+
+    // Redirect to login
+    navigate("/", { replace: true }); 
+  };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">📬 SocialScribe Dashboard</h1>
-      <NewsletterForm onCreated={() => setRefresh(r => r + 1)} />
-      <NewsletterList refreshTrigger={refresh} />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-xl rounded-lg p-8 w-96 text-center">
+        <h2 className="text-2xl font-semibold mb-4">Welcome to Dashboard</h2>
+        <p className="mb-4">Logged in as: {userEmail}</p>
+
+        <div className="space-y-3 mb-6">
+          <button
+            onClick={() => navigate("/create")}
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+          >
+            Create Newsletter
+          </button>
+          <button
+            onClick={() => navigate("/newsletters")}
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+          >
+            View Newsletters
+          </button>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

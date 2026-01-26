@@ -10,10 +10,10 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/auth/login`,
+        { email, password }
+      );
 
       if (!res.data.token) {
         alert('Login successful but token is missing. Please try again.');
@@ -48,7 +48,7 @@ export default function Login() {
         required
         style={{ display: 'block', width: '100%', marginBottom: '1rem' }}
       />
-      <button type="submit" style={{ width: '100%' }}>Login</button>
+      <button type="submit" style={{ width: '100%' }}>Sign In</button>
     </form>
   );
 }

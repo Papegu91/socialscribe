@@ -1,14 +1,17 @@
-const jwt = require('jsonwebtoken');
+const express = require('express');
+const router = express.Router();
 
-module.exports = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]; // expects "Bearer <token>"
-  if (!token) return res.status(401).json({ error: 'No token provided' });
+// Simple login route for testing
+router.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  console.log('Login attempt:', email, password);
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { id: ..., email: ... }
-    next();
-  } catch {
-    res.status(401).json({ error: 'Invalid token' });
+  // Dummy credentials for testing
+  if (email === 'demo@test.com' && password === 'demo123') {
+    return res.json({ token: 'test-token' });
   }
-};
+
+  res.status(401).json({ message: 'Invalid credentials' });
+});
+
+module.exports = router;
