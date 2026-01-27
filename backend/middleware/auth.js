@@ -5,6 +5,7 @@ const router = express.Router();
 router.post('/login', (req, res) => {
   const { email, password } = req.body;
   console.log('Login attempt:', email, password);
+  
 
   // Dummy credentials for testing
   if (email === 'demo@test.com' && password === 'demo123') {

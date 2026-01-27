@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Daily = require('../models/Daily');
 
-// @route   GET /api/daily
-// @desc    Get all daily posts
+
 router.get('/', async (req, res) => {
   try {
     const posts = await Daily.find().sort({ createdAt: -1 });
@@ -13,8 +12,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   POST /api/daily
-// @desc    Create a new daily post
+
 router.post('/', async (req, res) => {
   const { title, body } = req.body;
 
