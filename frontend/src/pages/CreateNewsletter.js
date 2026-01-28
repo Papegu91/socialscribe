@@ -9,18 +9,29 @@ const CreateNewsletter = () => {
   const [status, setStatus] = useState("draft");
   const navigate = useNavigate();
 
+  const token = localStorage.getItem("token"); // get JWT token
+  const userEmail = localStorage.getItem("userEmail"); // optional, for tracking
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/newsletters", {
-        subject,
-        body,
-        tags: tags.split(",").map(t => t.trim()),
-        status
-      });
+      await axios.post(
+        "http://localhost:5000/api/newsletters",
+        {
+          subject,
+          body,
+          tags: tags.split(",").map((t) => t.trim()),
+          status,
+          createdBy: userEmail, // optional field if you want to store who created it
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("Newsletter created successfully!");
       navigate("/newsletters");
     } catch (err) {
+      console.error("Error creating newsletter:", err);
       alert(err.response?.data?.error || "Error creating newsletter");
     }
   };
@@ -60,7 +71,10 @@ const CreateNewsletter = () => {
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          type="submit"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
           Publish
         </button>
       </form>

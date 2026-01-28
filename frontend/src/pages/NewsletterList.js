@@ -3,37 +3,68 @@ import axios from "axios";
 
 const NewsletterList = () => {
   const [newsletters, setNewsletters] = useState([]);
-  const [commentText, setCommentText] = useState("");
+  const [commentTexts, setCommentTexts] = useState({}); // store comment text per newsletter
 
   const userEmail = localStorage.getItem("userEmail") || "Anonymous";
+  const token = localStorage.getItem("token");
 
+  // Fetch newsletters
   useEffect(() => {
-    axios.get("http://localhost:5000/api/newsletters")
-      .then(res => setNewsletters(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchNewsletters = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/newsletters", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setNewsletters(res.data);
+      } catch (err) {
+        console.error("Error fetching newsletters:", err);
+      }
+    };
+    fetchNewsletters();
+  }, [token]);
 
+  // Like a newsletter
   const handleLike = async (id) => {
-    await axios.post(`http://localhost:5000/api/newsletters/${id}/like`, { user: userEmail });
-    const res = await axios.get("http://localhost:5000/api/newsletters");
-    setNewsletters(res.data);
+    try {
+      await axios.post(
+        `http://localhost:5000/api/newsletters/${id}/like`,
+        { user: userEmail },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const res = await axios.get("http://localhost:5000/api/newsletters", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNewsletters(res.data);
+    } catch (err) {
+      console.error("Error liking newsletter:", err);
+    }
   };
 
+  // Comment on a newsletter
   const handleComment = async (id) => {
-    if (!commentText.trim()) return;
-    await axios.post(`http://localhost:5000/api/newsletters/${id}/comment`, {
-      user: userEmail,
-      text: commentText
-    });
-    setCommentText("");
-    const res = await axios.get("http://localhost:5000/api/newsletters");
-    setNewsletters(res.data);
+    const text = commentTexts[id];
+    if (!text || !text.trim()) return;
+
+    try {
+      await axios.post(
+        `http://localhost:5000/api/newsletters/${id}/comment`,
+        { user: userEmail, text },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCommentTexts({ ...commentTexts, [id]: "" }); // clear input
+      const res = await axios.get("http://localhost:5000/api/newsletters", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNewsletters(res.data);
+    } catch (err) {
+      console.error("Error commenting:", err);
+    }
   };
 
   return (
     <div className="p-8">
       <h2 className="text-2xl font-bold mb-4">All Newsletters</h2>
-      {newsletters.map(n => (
+      {newsletters.map((n) => (
         <div key={n._id} className="border p-4 mb-4 rounded">
           <h3 className="text-xl font-semibold">{n.subject}</h3>
           <p>{n.body}</p>
@@ -46,16 +77,21 @@ const NewsletterList = () => {
           >
             Like
           </button>
+
           <div className="mt-2">
             <h4 className="font-semibold">Comments</h4>
-            {n.comments.map(c => (
-              <p key={c._id}><strong>{c.user}:</strong> {c.text}</p>
+            {n.comments.map((c) => (
+              <p key={c._id}>
+                <strong>{c.user}:</strong> {c.text}
+              </p>
             ))}
             <input
               type="text"
               placeholder="Write a comment..."
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
+              value={commentTexts[n._id] || ""}
+              onChange={(e) =>
+                setCommentTexts({ ...commentTexts, [n._id]: e.target.value })
+              }
               className="border p-1 w-full mt-2"
             />
             <button
