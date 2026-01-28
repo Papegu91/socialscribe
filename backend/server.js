@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 
 const User = require('./models/User');
 const authRoutes = require('./routes/auth');
+const newsletterRoutes = require('./routes/newsletters'); //  import newsletters
 
 const app = express();
 app.use(cors());
@@ -17,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 })
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error(' MongoDB connection error:', err.message));
+  .catch((err) => console.error('MongoDB connection error:', err.message));
 
 // Create test user once DB connection is open
 mongoose.connection.once('open', async () => {
@@ -34,15 +35,16 @@ mongoose.connection.once('open', async () => {
    Email: ${testEmail}
    Password: ${testPassword}`);
     } else {
-      console.log(' Test user already exists');
+      console.log('Test user already exists');
     }
   } catch (err) {
-    console.error(' Error creating test user:', err);
+    console.error('Error creating test user:', err);
   }
 });
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/newsletters', newsletterRoutes); //  mount newsletters
 
 // Root route
 app.get('/', (req, res) => {
@@ -52,5 +54,5 @@ app.get('/', (req, res) => {
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(` Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
